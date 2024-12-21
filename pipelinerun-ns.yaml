@@ -1,8 +1,0 @@
-apiVersion: tekton.dev/v1beta1
-kind: PipelineRun
-metadata:
-  name: pr-ns
-spec:
-  pipelineRef:
-    name: pip-ns
-  serviceAccountName: ns-tekton-sa

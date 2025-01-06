@@ -1,0 +1,57 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: multi-file-process
+spec:
+  workspaces:
+    - name: data
+  params:
+    - name: url
+      description: git url
+      type: string
+      default: "https://github.com/codequester/ns-create.git"
+    - name: branch
+      description: git branch
+      type: string 
+      default: "main" 
+    # - name: yaml-files
+    #   description: Array of YAML file paths
+    #   type: array
+  steps:
+    - name: clone
+      image: alpine/git
+      # git clone  --branch $(inputs.params.branch) $(inputs.params.url) $(workspaces.appsrc.path)
+      workingDir: $(workspaces.data.path)  
+      script: |
+        #!/bin/sh
+        rm -rfv ./*
+        rm -rf .*
+        git clone --branch $(inputs.params.branch) $(inputs.params.url) $(workspaces.data.path)
+        pwd
+        ls -al
+    - name: process-yaml
+      image:  shankar29/cmd-toolkit:latest
+      #args: ["$(params.yaml-files[*])"]
+      workingDir: $(workspaces.data.path)       
+      script: |
+        #!/bin/sh
+        set -e
+        pwd
+
+        #YAML_FILES=$@
+
+        yq --version
+
+        # Loop through files matching the pattern
+        for file in ./*.yml; do
+          echo "The file name is - $file"
+          yq eval '.artifact.attribs.clusters[]' "$file" | while read -r cluster; do
+            if [ -f "$file" ]; then  
+              echo "Processing data for cluster - $cluster"  
+              json_payload=$(yq eval -o json '.artifact.attribs | {"namespace":{"name": .name, "labels": .labels, "owner": .owner, "costcenter": .costcenter}}' $file)
+              echo $json_payload
+              echo "====="
+            fi
+          done
+        done
+        echo "Done!!!"        

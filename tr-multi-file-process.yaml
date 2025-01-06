@@ -1,0 +1,17 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  name: run-multi-file-process
+spec:
+  taskRef:
+    name: multi-file-process
+  params:
+    - name: yaml-files
+      value: 
+        - file1.yml 
+        - file2.yml
+  workspaces:
+    - name: data
+      persistentVolumeClaim:
+        claimName: multi-file-process-pvc
+  serviceAccountName: tekton-sa

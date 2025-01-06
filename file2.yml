@@ -8,3 +8,6 @@ artifact:
     owner: "sha123"
     costcenter: "abc1"
     size: "x-large"
+    clusters:
+     - cluster-a
+     - cluster-b    

@@ -1,0 +1,10 @@
+kind: mc-wkld-mgmt
+action: create
+artifact:
+  type: "namespace"
+  attribs:
+    name: "sample-ns"
+    labels: "app-id=ocp,env=test"
+    owner: "sha123"
+    costcenter: "abc1"
+    size: "medium"
